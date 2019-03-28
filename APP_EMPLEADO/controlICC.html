@@ -1,0 +1,370 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ICC</title>
+        <link type="text/css" href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link type="text/css" href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link type="text/css" href="css/theme.css" rel="stylesheet">
+        <link type="text/css" href="images/icons/css/font-awesome.css" rel="stylesheet">
+        <link type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600' rel='stylesheet'>
+		<script src="scripts/jquery-1.9.1.min.js" type="text/javascript"></script>
+		<script src="scripts/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
+		<script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+		
+    <!-- <script type="text/javascript" src="cordova.js"></script> -->
+	<script>
+        function getParameterByName(name) {
+			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+			results = regex.exec(location.search);
+			return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+		}
+
+		function numINdesp(){
+			var num=$('#num_desp').val();
+			if(num > 6){
+				$('#num_desp').val('0');
+			}
+		}
+	
+	$(document).ready(function() {
+		$('#userGet').val(getParameterByName('user'));
+		$('#userDocumGet').val(getParameterByName('docum'));
+		var userCon = $('#userDocumGet').val();
+		$.ajax({ 
+			type: 'POST', 
+			url: '../../APP_ICC_CONTROL/vacaciones.php',
+			data: {
+				"ICCNum" : userCon
+			},
+			dataType: 'json',
+			success: function (data) { 
+				$.each(data, function( index, value ) {
+					console.log(index+' val '+value);
+					if (index == 0){
+						$('#vacDisf').html(value);
+					}
+					if (index == 1){
+						$('#vacPend').html(value);
+					}
+					if (index == 2){
+						$('#vacPaga').html(value);
+					}
+				});
+			}
+		});
+		$.ajax({ 
+			type: 'POST', 
+			url: '../../APP_ICC_CONTROL/datosBasicos.php',
+			data: {
+				"ICCNum" : userCon,
+			},
+			dataType: 'json',
+			success: function (data) { 
+				$.each(data, function( index, value ) {
+					console.log(index+' val '+value);
+					if (index == 0){
+						$('#dt1').html(value);
+					}
+					if (index == 1){
+						$('#dt2').html(value);
+					}
+					if (index == 2){
+						$('#dt3').html(value);
+					}
+					if (index == 3){
+						$('#dt4').html(value);
+					}
+					if (index == 4){
+						$('#dt5').html(value);
+					}
+					if (index == 5){
+						$('#dt6').html(value);
+					}
+				});
+			}
+		});
+	});
+	
+	function desprendiblePago(){
+		var userCon = $('#userDocumGet').val();
+		var numdespCon = $('#num_desp').val();
+		var email = $('#emailtmp').val();
+		$('#loadPDF').html('<iframe style="padding-left:20px;min-height:600px;max-height:600px;height:600px;" frameBorder="0" src="../../APP_ICC_CONTROL/pdfDesprendibleEm.php?userSearch='+userCon+'&ndesp='+numdespCon+'&mail='+email+'" width="70%"></iframe>');
+		//window.open('../../APP_ICC_CONTROL/APPEMPLEADO/pdfDesprendible.php?userSearch='+userCon+'&ndesp='+numdespCon, '_system'); return false;
+	}
+	function certificadoLaboral(){
+		var userCon = $('#userDocumGet').val();
+		var email = $('#emailtmp').val();
+		$('#loadPDF').html('<iframe style="padding-left:20px;min-height:600px;max-height:600px;height:600px;" frameBorder="0" src="../../APP_ICC_CONTROL/pdfCertificadoLaboralEm.php?userSearch='+userCon+'&mail='+email+'" width="70%"></iframe>');
+		//window.open('../../APP_ICC_CONTROL/APPEMPLEADO/pdfCertificadoLaboral.php?userSearch='+userCon, '_system'); return false;
+	}
+	function certificadoIngresos(){
+		var userCon = $('#userDocumGet').val();
+		var email = $('#emailtmp').val();
+		$('#loadPDF').html('<iframe style="padding-left:20px;min-height:500px;max-height:500px;height:500px;" frameBorder="0" src="../../APP_ICC_CONTROL/pdfCertificadoIngresosEm.php?userSearch='+userCon+'&mail='+email+'" width="70%"></iframe>');
+		//window.open('../../APP_ICC_CONTROL/APPEMPLEADO/pdfCertificadoIngresos.php?userSearch='+userCon, '_system'); return false;
+	}
+	function consultarAportes(){
+		window.open('https://www.aportesenlinea.com/Autoservicio/CertificadoAportes.aspx', '_system'); return false;
+	}
+	function hojavida(){
+		$('#hv').show();
+		$('#principal').hide();
+	}
+	function returnHome(){
+	
+		$('#hv').hide();
+		$('#principal').show();
+	}
+	function anexos(urlAnexo){
+		var email = $('#emailtmp').val();
+		$.ajax({ 
+			type: 'POST', 
+			url: '../../APP_ICC_CONTROL/enviarForm.php',
+			data: {
+				"formato" : urlAnexo,
+				"mail" : email
+			},
+			dataType: 'json',
+			success: function (data) { 
+			  console.log('SUCCESS');	
+			}
+		});
+		$('#loadPDF').html('<iframe style="padding-left:20px;min-height:600px;max-height:600px;height:600px;" frameBorder="0" src="../../APP_ICC_CONTROL/FORMATOS/'+urlAnexo+'" width="70%"></iframe>');
+		//window.open('../../APP_ICC_CONTROL/FORMATOS/'+urlAnexo, '_system'); return false;
+	}
+	</script>
+    </head>
+    <body>
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <a class="brand" href="index.html">
+					<div align="left" >
+						<img src="images/logo-01.png" width="10%" align="center"/>
+					</div>
+                </a>
+            </div>
+            <!-- /navbar-inner -->
+        </div>
+        <!-- /navbar -->
+        <div class="wrapper" id="principal" style="display:block;">
+            <div class="container">
+                <div class="row">
+                    <div class="span3">
+                        <div class="sidebar">
+                            <ul class="widget widget-menu unstyled" >
+                                <li>
+									<a href="#" data-toggle="modal" data-target="#myModal" style="color: #FFF;">
+										<i class="menu-icon icon-tasks"></i>
+										Desprendibles de pago
+									</a>
+								</li>
+                                <li class="active">
+									<a href="#" onclick="certificadoLaboral();" style="color: #FFF;">
+										<i class="menu-icon icon-book"></i>
+										Certificaciones laborales
+									</a>
+								</li>
+                                <li class="active">
+									<a href="#" onclick="certificadoIngresos();" style="color: #FFF;">
+										<i class="menu-icon icon-list"></i>
+										Certificados de Ingresos y Retenciones
+									</a>
+								</li>
+								<li class="active">
+									<a href="#" onclick="consultarAportes();" style="color: #FFF;">
+										<i class="menu-icon icon-eye-open"></i>
+										Consultar Aportes
+									</a>
+								</li>
+                            </ul>
+                            <!--/.widget-nav-->
+                            
+                            
+                            <ul class="widget widget-menu unstyled">
+                                <li>
+									<a href="#" onclick="hojavida();" style="color: #FFF;">
+										<i class="menu-icon icon-bold"></i> 
+										Datos básicos de H.V. 
+									</a>
+								</li>
+                                <li>
+									<a class="collapsed" data-toggle="collapse" href="#togglePagesVac" style="color: #FFF;">
+										<i class="menu-icon icon-plane"></i>
+										<i class="icon-chevron-down pull-right"></i>
+										<i class="icon-chevron-up pull-right"></i>Vacaciones
+									</a>
+                                    <ul id="togglePagesVac" class="collapse unstyled">
+                                        <div style="text-align:center; min-width:100%; max-width:100%; height:180px;min-height:180px;max-height:180px; padding-top:10px;" >
+											<button type="button" class="btn btn-primary"> Disfrutadas. <span class="badge" id="vacDisf"></span></button><hr />
+											<button type="button" class="btn btn-primary"> Pendientes. <span class="badge" id="vacPend"></span></button><hr />
+											<button type="button" class="btn btn-primary"> Pagadas. <span class="badge" id="vacPaga"></span></button>
+										</div>
+                                    </ul>
+                                </li>
+                                <li>
+									<a class="collapsed" data-toggle="collapse" href="#togglePages" style="color: #FFF;">
+										<i class="menu-icon icon-file"></i>
+										<i class="icon-chevron-down pull-right"></i>
+										<i class="icon-chevron-up pull-right"></i>Anexos 
+									</a>
+                                    <ul id="togglePages" class="collapse unstyled">
+                                        <li>
+											<a href="#" onclick="anexos('autorizacion_dscto.pdf');">
+												<i class="icon-inbox"></i>
+												AUTORIZACION DE DESCUENTOS 
+											</a>
+										</li>
+                                        <li>
+											<a href="#" onclick="anexos('form_calamidad.pdf');">
+												<i class="icon-inbox"></i>
+												FORMATO CALAMIDAD
+											</a>
+										</li>
+                                        <li>
+											<a href="#" onclick="anexos('novedades_retiro.pdf');">
+												<i class="icon-inbox"></i>
+												Novedades de retiro V  2 4 
+											</a>
+										</li><li>
+											<a href="#" onclick="anexos('pazysalvo_admin.pdf');">
+												<i class="icon-inbox"></i>
+												Paz y salvo administrativo V  4 
+											</a>
+										</li>
+                                        <li>
+											<a href="#" onclick="anexos('pazysalvo_oper.pdf');">
+												<i class="icon-inbox"></i>
+												Paz y salvo operativo V 16 
+											</a>
+										</li>
+                                        <li>
+											<a href="#" onclick="anexos('vacaciones_admin.pdf');">
+												<i class="icon-inbox"></i>
+												Solicitud de vacaciones Administrativo 
+											</a>
+										</li><li>
+											<a href="#" onclick="anexos('vacaciones_oper.pdf');">
+												<i class="icon-inbox"></i>
+												Solicitud de vacaciones Operaciones
+											</a>
+										</li>
+										</li><li>
+											<a href="#" onclick="anexos('sol_explicacion.pdf');">
+												<i class="icon-inbox"></i>
+												Solicitud de explicación
+											</a>
+										</li>
+										</li><li>
+											<a href="#" onclick="anexos('lic_paternidad.pdf');">
+												<i class="icon-inbox"></i>
+												Licencia de Paternidad
+											</a>
+										</li>
+										</li><li>
+											<a href="#" onclick="anexos('lic_maternidad.pdf');">
+												<i class="icon-inbox"></i>
+												Licencia de Maternidad
+											</a>
+										</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <!--/.widget-nav-->
+                            <ul class="widget widget-menu unstyled">
+                                
+                                <li><a href="index.html" style="color: #FFF;"><i class="menu-icon icon-signout"></i>Logout </a></li>
+                            </ul>
+                        </div>
+                        <!--/.sidebar-->
+                    </div>
+                    <!--/.span3-->
+                    <div id="loadPDF" style="padding-left:20px;">
+                         
+                    </div>
+                    <!--/.span9-->
+                </div>
+            </div>
+            <!--/.container-->
+        </div>
+		<div id="hv" class="wrapper" style="display:none;padding-left:10%;">
+			
+			<hr>
+			<table class="table table-striped" border="0" width="100%">
+				<tbody>
+					<tr><th>
+					
+						<button type="button" class="btn btn-info" onclick="returnHome();">
+							<span class="glyphicon glyphicon-arrow-left"></span> Atrás
+						</button>
+					
+					</th></tr>
+					<tr>
+						<th class="50%">NOMBRE</th>
+						<td id="dt1" class="50%"></td>
+					</tr>
+					<tr>
+						<th>APELLIDO</th>
+						<td id="dt2"></td>
+					</tr>
+					<tr>
+						<th>TIPO DOCUMENTO</th>
+						<td id="dt3"></td>
+					</tr>
+					<tr>
+						<th>DOCUMENTO</th>
+						<td id="dt4"></td>
+					</tr>
+					<tr>
+						<th>DIRECCIÓN</th>
+						<td id="dt5"></td>
+					</tr>
+					<tr>
+						<th>CELULAR</th>
+						<td id="dt6"></td>
+					</tr>
+					<tr>
+						<th>EMAIL</th>
+						<td id="dt6"><input type="email" id="emailtmp"/></td><button type="button" class="btn btn-info"></button>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+        <!--/.wrapper-->
+        <div class="footer">
+            <div class="container">
+                <b class="copyright">&copy; 2019 ICC </b>All rights reserved.<input type="hidden" id="userDocumGet" />
+            </div>
+        </div>
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">No. Desprendibles</h4>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:24px;">Descargar los ultimos 
+		<input id="num_desp" onchange="numINdesp();" onkeyup="numINdesp()" type="number" max="6" min="1" step="1" value="1" style="width:50px;min-width:50px;max-width:50px;font-size:36px;height:80px;min-height:80px;max-height:80px;"/>
+		desprendibles de pago.</p>
+		<hr>
+		Max:(6)
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		<button type="button" class="btn btn-success" data-dismiss="modal" onclick="desprendiblePago();">Descargar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+        
+      
+    </body>
